@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yan AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative; /* Ensure relative positioning for absolute elements */
+        }
+        .logo {
+            position: absolute;
+            top: 10px; /* Adjust this value for vertical positioning */
+            right: 10px; /* Adjust this value for horizontal positioning */
+            width: 100px; /* Adjust the width of your logo */
+        }
+        .chat-box {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 20px;
+            padding: 10px;
+            min-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="{{ url_for('static', filename='yan_logo.png') }}" alt="Yan AI Logo" class="logo">
+        <h1>Welcome to Yan AI</h1>
+        <div class="chat-box" id="chat-box">
+            <!-- Chat messages will be displayed here -->
+        </div>
+        <div>
+            <input type="text" id="user-input" placeholder="Ask something...">
+            <button onclick="askQuestion()">Ask</button>
+        </div>
+    </div>
+    <script>
+        function askQuestion() {
+            var question = document.getElementById("user-input").value;
+            var chatBox = document.getElementById("chat-box");
+            var userMessage = document.createElement("div");
+            userMessage.innerHTML = "<strong>You:</strong> " + question;
+            chatBox.appendChild(userMessage);
+
+            // AJAX request to Flask backend
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "/ask?question=" + encodeURIComponent(question));
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    var botMessage = document.createElement("div");
+                    botMessage.innerHTML = "<strong>Yan AI:</strong> " + response.answer;
+                    chatBox.appendChild(botMessage);
+                }
+            };
+            xhr.send();
+        }
+    </script>
+</body>
+</html>
